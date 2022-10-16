@@ -54,30 +54,36 @@ class BinarySearchTree {
   }
 
   remove(data) {
-    if (!this.has(data)) throw new Error("There is no such value!");
+    // if (!this.has(data)) throw new Error("There is no such value!");
 
     let parentNode = this.data;
     let foundNode = findNodeAndParent(parentNode, data);
     let side = parentNode.left === foundNode ? "left" : "right";
 
     function seekForTheBiggestLeft(node) {
-      let nodeToAssignNull = node;
-      let parentOfTarget = node.left;
-      let targetNode;
-      if (!parentOfTarget.right) {
-        nodeToAssignNull.data = parentOfTarget.data;
-        nodeToAssignNull.left = null;
+      let targetNode = node;
+      let parentOfWithdrawnNode;
+      let withdrawnNode;
+      if (!node.left.right) {
+        targetNode.data = node.left.data;
+        node.left.left
+          ? (targetNode.left = node.left.left)
+          : (targetNode.left = null);
+        return;
+      }
+      parentOfWithdrawnNode = node.left;
+      withdrawnNode = parentOfWithdrawnNode.right;
+      if (withdrawnNode.right) {
+        while (withdrawnNode.right) {
+          parentOfWithdrawnNode = withdrawnNode;
+          withdrawnNode = withdrawnNode.right;
+        }
+        targetNode.data = withdrawnNode.data;
+        parentOfWithdrawnNode.right - withdrawnNode.left;
         return;
       } else {
-        targetNode = parentOfTarget.right;
-        while (targetNode) {
-          nodeToAssignNull = parentOfTarget;
-          parentOfTarget = targetNode;
-          targetNode = targetNode.right;
-        }
-        parentNode[side] = parentOfTarget.data;
-        nodeToAssignNull.right = null;
-        return;
+        targetNode.data = withdrawnNode.data;
+        parentOfWithdrawnNode.right - withdrawnNode.left;
       }
     }
 
@@ -94,7 +100,6 @@ class BinarySearchTree {
     }
 
     if (this.data.data === data) {
-      console.log("I am triggered");
       if (!this.data.left && this.data.right) {
         return (this.data = this.data.right);
       } else if (this.data.left && !this.data.right) {
